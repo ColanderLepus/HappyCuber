@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36518.9 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HappyCuber", "HappyCuber\HappyCuber.csproj", "{8F5BCFB0-A760-4509-A43B-FFFB5A328795}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HappyCuberTest", "HappyCuberTest\HappyCuberTest.csproj", "{C64EA811-319A-4B49-923A-22FDFAB00DC3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8F5BCFB0-A760-4509-A43B-FFFB5A328795}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F5BCFB0-A760-4509-A43B-FFFB5A328795}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F5BCFB0-A760-4509-A43B-FFFB5A328795}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F5BCFB0-A760-4509-A43B-FFFB5A328795}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C64EA811-319A-4B49-923A-22FDFAB00DC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C64EA811-319A-4B49-923A-22FDFAB00DC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C64EA811-319A-4B49-923A-22FDFAB00DC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C64EA811-319A-4B49-923A-22FDFAB00DC3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {444F12E1-DD90-40D3-9D0F-A0F550946CF3}
+	EndGlobalSection
+EndGlobal
