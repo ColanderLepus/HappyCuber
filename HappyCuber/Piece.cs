@@ -101,4 +101,10 @@ public class Piece(ushort side)
 
         return n;
     }
+
+    public static bool EdgesFit(byte edgeA, byte edgeB)
+    {
+        // Example: edges fit if they are bitwise complements (all bits opposite)
+        return (edgeA ^ edgeB) == 0b11111;
+    }
 }
