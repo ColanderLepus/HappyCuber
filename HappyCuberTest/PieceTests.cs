@@ -204,4 +204,16 @@ public class PieceTests
         
 
     }
+
+    [Theory]
+    [InlineData(0b00000, 0b11111, true)]
+    [InlineData(0b10101, 0b01010, true)]
+    public void EdgesFit_ShouldReturnCorrectResult(byte edgeA, byte edgeB, bool expectedResult)
+    {
+        // Act
+        bool result = Piece.EdgesFit(edgeA, edgeB);
+        
+        // Assert
+        Assert.Equal(expectedResult, result);
+    }
 }
