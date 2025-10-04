@@ -68,7 +68,7 @@ jobs:
               'begin', 
               '/k:"ColanderLepus_HappyCuber"',
               '/o:"colanderlepus"',
-              "/d:sonar.token=`"${{ secrets.SONAR_TOKEN }}`"",
+              "/d:sonar.token=`"$env:SONAR_TOKEN`"",
               '/d:sonar.dotnet.excludeTestProjects=true',
               '/d:sonar.verbose=true',
               '/d:sonar.coverage.exclusions="**/obj/**"',
@@ -89,4 +89,4 @@ jobs:
           -f xml -o "coverage.xml"
 
           # 4. End the SonarQube analysis
-          & $scannerPath end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+          & $scannerPath end /d:sonar.token="$env:SONAR_TOKEN"
