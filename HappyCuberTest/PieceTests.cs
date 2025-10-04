@@ -17,6 +17,7 @@ public class PieceTests
         Assert.NotNull(piece);
     }
 
+    #region Top Edge Tests
     [Fact]
     public void TopEdge_Getter_ShouldReturnCorrectValue()
     {
@@ -48,6 +49,20 @@ public class PieceTests
     }
 
     [Fact]
+    public void TopEdge_Setter_ShouldThrowException_WhenValueIsTooHigh()
+    {
+        // Arrange
+        Piece piece = new(0);
+        byte invalidValue = 32; // EdgeBitMask + 1
+
+        // Act & Assert
+        // We expect an ArgumentOutOfRangeException when setting the invalid value.
+        Assert.Throws<ArgumentOutOfRangeException>(() => piece.TopEdge = invalidValue);
+    }
+    #endregion
+
+    #region Right Edge Tests
+    [Fact]
     public void RightEdge_Getter_ShouldReturnCorrectValue()
     {
         // Arrange
@@ -78,6 +93,20 @@ public class PieceTests
     }
 
     [Fact]
+    public void RightEdge_Setter_ShouldThrowException_WhenValueIsTooHigh()
+    {
+        // Arrange
+        Piece piece = new(0);
+        byte invalidValue = 32; // EdgeBitMask + 1
+
+        // Act & Assert
+        // We expect an ArgumentOutOfRangeException when setting the invalid value.
+        Assert.Throws<ArgumentOutOfRangeException>(() => piece.RightEdge = invalidValue);
+    }
+    #endregion
+
+    #region Bottom Edge Tests
+    [Fact]
     public void BottomEdge_Getter_ShouldReturnCorrectValue()
     {
         // Arrange
@@ -107,6 +136,20 @@ public class PieceTests
         Assert.Equal(0b0001_1111_0000_0000, Convert.ToUInt16(piece.ToString(), 2));
     }
 
+    [Fact]
+    public void BottomEdge_Setter_ShouldThrowException_WhenValueIsTooHigh()
+    {
+        // Arrange
+        Piece piece = new(0);
+        byte invalidValue = 32; // EdgeBitMask + 1
+
+        // Act & Assert
+        // We expect an ArgumentOutOfRangeException when setting the invalid value.
+        Assert.Throws<ArgumentOutOfRangeException>(() => piece.BottomEdge = invalidValue);
+    }
+    #endregion
+
+    #region Left Edge Tests
     [Theory]
     [InlineData(0b0000_0000_0000_0000, 0b00000)]
     [InlineData(0b0001_0000_0000_0000, 0b00001)]
@@ -144,6 +187,19 @@ public class PieceTests
         Assert.Equal(leftEdge, piece.LeftEdge);
         Assert.Equal(expectedSide, Convert.ToUInt16(piece.ToString(), 2));
     }
+
+    [Fact]
+    public void LeftEdge_Setter_ShouldThrowException_WhenValueIsTooHigh()
+    {
+        // Arrange
+        Piece piece = new(0);
+        byte invalidValue = 32; // EdgeBitMask + 1
+        
+        // Act & Assert
+        // We expect an ArgumentOutOfRangeException when setting the invalid value.
+        Assert.Throws<ArgumentOutOfRangeException>(() => piece.LeftEdge = invalidValue);
+    }
+    #endregion
 
     [Fact]
     public void RotateClockwise_ShouldRotateEdgesCorrectly()
@@ -200,9 +256,6 @@ public class PieceTests
         
         // Assert
         Assert.Equal(expectedFlippedPiece.ToString(), piece.ToString());
-
-        
-
     }
 
     [Theory]

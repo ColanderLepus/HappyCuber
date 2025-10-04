@@ -11,6 +11,9 @@ public class Piece(ushort side)
         get => (byte)(_side & EdgeBitMask);
         set
         {
+            if(value > EdgeBitMask)
+                throw new ArgumentOutOfRangeException(nameof(value), "Top edge value must be a 5-bit number (0-31).");
+
             ushort clearMask = unchecked((ushort)~EdgeBitMask);
             _side = (ushort)((_side & clearMask) | value);
         }
@@ -21,6 +24,9 @@ public class Piece(ushort side)
         get => (byte)((_side >> 4) & EdgeBitMask);
         set
         {
+            if(value > EdgeBitMask)
+                throw new ArgumentOutOfRangeException(nameof(value), "Right edge value must be a 5-bit number (0-31).");
+
             ushort clearMask = unchecked((ushort)~(EdgeBitMask << 4));
             _side = (ushort)((_side & clearMask) | (value << 4));
         }
@@ -31,6 +37,9 @@ public class Piece(ushort side)
         get => (byte)((_side >> 8) & EdgeBitMask);
         set
         {
+            if(value > EdgeBitMask)
+                throw new ArgumentOutOfRangeException(nameof(value), "Bottom edge value must be a 5-bit number (0-31).");
+
             ushort clearMask = unchecked((ushort)~(EdgeBitMask << 8));
             _side = (ushort)((_side & clearMask) | (value << 8));
         }
@@ -48,6 +57,8 @@ public class Piece(ushort side)
         set
         {
             // This is now much simpler as there are only two contiguous blocks to set!
+            if(value > EdgeBitMask)
+                throw new ArgumentOutOfRangeException(nameof(value), "Left edge value must be a 5-bit number (0-31).");
 
             // 1. Set the S0 bit from the L4 (MSB) of 'value'
             //    (value bit 4 is 0b10000)
