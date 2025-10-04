@@ -56,7 +56,6 @@ public class Piece(ushort side)
         }
         set
         {
-            // This is now much simpler as there are only two contiguous blocks to set!
             if(value > EdgeBitMask)
                 throw new ArgumentOutOfRangeException(nameof(value), "Left edge value must be a 5-bit number (0-31).");
 
