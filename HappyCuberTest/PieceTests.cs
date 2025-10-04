@@ -201,6 +201,7 @@ public class PieceTests
     }
     #endregion
 
+    #region Piece Manipulation Tests
     [Fact]
     public void RotateClockwise_ShouldRotateEdgesCorrectly()
     {
@@ -240,6 +241,7 @@ public class PieceTests
         // Assert
         Assert.Equal(expectedFlippedPiece.ToString(), piece.ToString());
     }
+    #endregion
 
     [Theory]
     [InlineData(0b00000, 0b11111, true)]
