@@ -2,36 +2,42 @@ name: SonarQube
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
   pull_request:
     types: [opened, synchronize, reopened]
+  workflow_dispatch:
 
 jobs:
   build:
     name: Build and analyze
     runs-on: windows-latest
     steps:
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
+      # --- .NET Setup
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
         with:
-          java-version: 17
-          distribution: 'zulu' # Alternative distribution options are available.
+          dotnet-version: 8.x # Ensure you have the latest stable version
+          
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-          
-      - name: Cache SonarQube Cloud packages
+          # Required for SonarScanner to calculate changes accurately
+          # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0
+
+      # --- Caching Steps ---
+      - name: Cache NuGet packages
         uses: actions/cache@v4
         with:
-          path: ~\sonar\cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: ${{ runner.os }}-nuget-
 
+      # --- SonarScanner Cache & Install
       - name: Cache SonarQube Cloud scanner
         id: cache-sonar-scanner
         uses: actions/cache@v4
         with:
+          # Using the temporary runner path for a clean install
           path: ${{ runner.temp }}\scanner
           key: ${{ runner.os }}-sonar-scanner
           restore-keys: ${{ runner.os }}-sonar-scanner
@@ -40,31 +46,41 @@ jobs:
         if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
         shell: powershell
         run: |
-          New-Item -Path ${{ runner.temp }}\scanner -ItemType Directory
-          dotnet tool update dotnet-sonarscanner --tool-path ${{ runner.temp }}\scanner
-          
+          # The tool is installed directly into the cached location only if it's missing
+          dotnet tool install --global dotnet-sonarscanner --tool-path ${{ runner.temp }}\scanner
+
+      # --- Build, Test, and Analyze Step ---
       - name: Build, test and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
+          # Define the scanner path variable for cleaner command calls
+          $scannerPath = "${{ runner.temp }}\scanner\dotnet-sonarscanner"
+          
           # 1. Start the SonarQube analysis
-          ${{ runner.temp }}\scanner\dotnet-sonarscanner begin `
+          & $scannerPath begin `
               /k:"ColanderLepus_HappyCuber" `
               /o:"colanderlepus" `
               /d:sonar.token="${{ secrets.SONAR_TOKEN }}" `
-              /d:sonar.cs.opencover.reportsPaths="**\TestResults\coverage.xml" # <--- IMPORTANT: Tell Sonar where to look
+              /d:sonar.dotnet.excludeTestProjects=true `
+              /d:sonar.verbose=true `
+              /d:sonar.coverage.exclusions="**/obj/**" ` # Simple, recommended exclusion pattern
+              /d:sonar.cs.opencover.reportsPaths="**\TestResults\coverage.xml" ` # FIX: Now looking for OpenCover format
+              /d:sonar.cs.vstest.reportsPaths="**\TestResults\*.trx"
           
           # 2. Build the solution
-          dotnet build
+          dotnet build --configuration Release --no-incremental
 
-          # 3. Run the tests
+          # 3. Run the tests and generate coverage report using Coverlet
+          # The Coverlet properties trigger the coverage report generation natively within 'dotnet test'
           dotnet test `
-            --no-build `
-            /p:CollectCoverage=true `
-            /p:CoverletOutputFormat=opencover `
-            /p:CoverletOutput=TestResults\coverage.xml
+              --no-build `
+              --configuration Release `
+              /p:CollectCoverage=true `
+              /p:CoverletOutputFormat=opencover ` # Output format matches the Sonar property above
+              /p:CoverletOutput="TestResults\coverage.xml" `
+              --logger "trx;LogFileName=test_results.trx" # Also generates the TRX file
 
           # 4. End the SonarQube analysis
-          ${{ runner.temp }}\scanner\dotnet-sonarscanner end `
-              /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+          & $scannerPath end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
