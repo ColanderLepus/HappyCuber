@@ -55,32 +55,36 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          # Define the scanner path variable for cleaner command calls
+          # Define the scanner path variable
           $scannerPath = "${{ runner.temp }}\scanner\dotnet-sonarscanner"
-          
-          # 1. Start the SonarQube analysis
-          & $scannerPath begin `
-              /k:"ColanderLepus_HappyCuber" `
-              /o:"colanderlepus" `
-              /d:sonar.token="${{ secrets.SONAR_TOKEN }}" `
-              /d:sonar.dotnet.excludeTestProjects=true `
-              /d:sonar.verbose=true `
-              /d:sonar.coverage.exclusions="**/obj/**" ` # Simple, recommended exclusion pattern
-              /d:sonar.cs.opencover.reportsPaths="**\TestResults\coverage.xml" ` # FIX: Now looking for OpenCover format
-              /d:sonar.cs.vstest.reportsPaths="**\TestResults\*.trx"
-          
+
+          # Define all 'begin' parameters as a single string to avoid backtick issues
+          $sonarBeginParams = (
+              'begin', 
+              '/k:"ColanderLepus_HappyCuber"',
+              '/o:"colanderlepus"',
+              "/d:sonar.token=`"${{ secrets.SONAR_TOKEN }}`"",
+              '/d:sonar.dotnet.excludeTestProjects=true',
+              '/d:sonar.verbose=true',
+              '/d:sonar.coverage.exclusions="**/obj/**"',
+              '/d:sonar.cs.opencover.reportsPaths="**\TestResults\coverage.xml"',
+              '/d:sonar.cs.vstest.reportsPaths="**\TestResults\*.trx"'
+          )
+
+          # 1. Start the SonarQube analysis using array expansion
+          & $scannerPath @sonarBeginParams
+
           # 2. Build the solution
           dotnet build --configuration Release --no-incremental
 
           # 3. Run the tests and generate coverage report using Coverlet
-          # The Coverlet properties trigger the coverage report generation natively within 'dotnet test'
           dotnet test `
               --no-build `
               --configuration Release `
               /p:CollectCoverage=true `
-              /p:CoverletOutputFormat=opencover ` # Output format matches the Sonar property above
+              /p:CoverletOutputFormat=opencover `
               /p:CoverletOutput="TestResults\coverage.xml" `
-              --logger "trx;LogFileName=test_results.trx" # Also generates the TRX file
+              --logger "trx;LogFileName=test_results.trx"
 
           # 4. End the SonarQube analysis
           & $scannerPath end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
