@@ -49,6 +49,11 @@ jobs:
           # The tool is installed directly into the cached location only if it's missing
           dotnet tool install --global dotnet-sonarscanner --tool-path ${{ runner.temp }}\scanner
 
+      # --- Install dotnet-coverage Tool ---
+      - name: Install dotnet-coverage
+        shell: powershell
+        run: dotnet tool install --global dotnet-coverage
+
       # --- Build, Test, and Analyze Step ---
       - name: Build, test and analyze
         env:
@@ -67,7 +72,8 @@ jobs:
               '/d:sonar.dotnet.excludeTestProjects=true',
               '/d:sonar.verbose=true',
               '/d:sonar.coverage.exclusions="**/obj/**"',
-              '/d:sonar.cs.opencover.reportsPaths="**\TestResults\coverage.xml"',
+              '/d:sonar.cs.vscoveragexml.reportsPaths="coverage.xml"',
+              #'/d:sonar.cs.opencover.reportsPaths="**\TestResults\coverage.xml"',
               '/d:sonar.cs.vstest.reportsPaths="**\TestResults\*.trx"'
           )
 
@@ -77,14 +83,10 @@ jobs:
           # 2. Build the solution
           dotnet build --configuration Release --no-incremental
 
-          # 3. Run the tests and generate coverage report using Coverlet
-          dotnet test `
-              --no-build `
-              --configuration Release `
-              /p:CollectCoverage=true `
-              /p:CoverletOutputFormat=opencover `
-              /p:CoverletOutput="TestResults\coverage.xml" `
-              --logger "trx;LogFileName=test_results.trx"
+          # 3. Run tests with coverage collection
+          dotnet-coverage collect `
+          "dotnet test --no-build --configuration Release --logger `"trx;LogFileName=test_results.trx`"" `
+          -f xml -o "coverage.xml"
 
           # 4. End the SonarQube analysis
           & $scannerPath end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
