@@ -222,23 +222,6 @@ public class PieceTests
         Assert.Equal(0b00100, piece.LeftEdge);   // New Left   = Old Bottom - value 0b00100 (4)
     }
 
-    [Theory]
-    [InlineData(0b0000_0000_0000_0000, "0000000000000000")]
-    [InlineData(0b1111_1111_1111_1111, "1111111111111111")]
-    [InlineData(0b1010_1010_1010_1010, "1010101010101010")]
-    [InlineData(0b0101_0101_0101_0101, "0101010101010101")]
-    public void ToString_ShouldReturnBinaryRepresentation(ushort side, string expectedString)
-    {
-        // Arrange
-        Piece piece = new(side);
-        
-        // Act
-        string binaryString = piece.ToString();
-        
-        // Assert
-        Assert.Equal(expectedString, binaryString);
-    }
-
     [Fact]
     public void FlipVertical_ShouldFlipEdgesCorrectly()
     {
@@ -269,4 +252,22 @@ public class PieceTests
         // Assert
         Assert.Equal(expectedResult, result);
     }
+
+    [Theory]
+    [InlineData(0b0000_0000_0000_0000, "0000000000000000")]
+    [InlineData(0b1111_1111_1111_1111, "1111111111111111")]
+    [InlineData(0b1010_1010_1010_1010, "1010101010101010")]
+    [InlineData(0b0101_0101_0101_0101, "0101010101010101")]
+    public void ToString_ShouldReturnBinaryRepresentation(ushort side, string expectedString)
+    {
+        // Arrange
+        Piece piece = new(side);
+
+        // Act
+        string binaryString = piece.ToString();
+
+        // Assert
+        Assert.Equal(expectedString, binaryString);
+    }
+
 }
