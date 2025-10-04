@@ -223,23 +223,19 @@ public class PieceTests
         Assert.Equal(0b00100, piece.LeftEdge);   // New Left   = Old Bottom - value 0b00100 (4)
     }
 
-    [Fact]
-    public void FlipVertical_ShouldFlipEdgesCorrectly()
+    [Theory]
+    [InlineData(0b_0101_1011_1010_1010, 0b_1011_1011_0100_1010)]
+    [InlineData(0b_1011_0100_1010_1010, 0b_1010_0101_1010_1010)]
+    [InlineData(0b_1001_1010_1101_1011, 0b_0110_1011_0011_1011)]
+    [InlineData(0b_1100_0101_1100_1101, 0b_0111_0100_0111_0110)]
+    public void FlipVertical_ShouldFlipEdgesCorrectly(ushort original, ushort expectedFlipped)
     {
-        // Arrange
-        // Initial edges:
-        // Top    = 0b00001 (1)
-        // Right  = 0b00010 (2)
-        // Bottom = 0b00100 (4)
-        // Left   = 0b11000 (24) (notice the 1 bit from the top edge wraps around to the MSB of the left edge)
-        Piece piece                = new(0b_0110_1001_1010_0110);
-        Piece expectedFlippedPiece = new(0b_1011_0010_1100_1100);
 
-        // Act
+        Piece piece = new(original);
         piece.FlipVertical();
-        
-        // Assert
-        Assert.Equal(expectedFlippedPiece.ToString(), piece.ToString());
+
+        Assert.Equal(expectedFlipped, Convert.ToUInt16(piece.ToString(), 2));
+
     }
     #endregion
 

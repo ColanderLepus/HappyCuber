@@ -82,9 +82,8 @@ public class Piece(ushort side)
         // Step 1: Reverse the entire 16-bit field.
         ushort reversed = Reverse16Bits(_side);
 
-        // Step 2: Cyclically shift the reversed result 5 positions to the right.
-        // k=5, so 16-k = 11.
-        ushort shifted = (ushort)((reversed >> 5) | (reversed << 11));
+        // Step 2: Take the five most significant bits and rotate them to the least significant position
+        ushort shifted = (ushort)((reversed >> 11) | (reversed << 5));
 
         _side = shifted;
     }
